@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campervan Solar Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; }
+        input, button { margin: 10px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Campervan Solar Calculator</h2>
+        <label>Device Name: <input type="text" id="deviceName"></label><br>
+        <label>Wattage (W): <input type="number" id="wattage"></label><br>
+        <label>Usage (hrs/day): <input type="number" id="usage"></label><br>
+        <button onclick="addDevice()">Add Device</button>
+        <button onclick="clearDevices()">Clear Devices</button>
+        
+        <h3>Devices:</h3>
+        <ul id="deviceList"></ul>
+        
+        <label>Daylight Hours: <input type="number" id="daylight"></label><br>
+        <label>Solar Efficiency (%): <input type="number" id="efficiency"></label><br>
+        <label>Days Off-Grid: <input type="number" id="days"></label><br>
+        
+        <button onclick="calculate()">Calculate</button>
+        <h3 id="result"></h3>
+    </div>
+    
+    <script>
+        let devices = [];
+        
+        function addDevice() {
+            let name = document.getElementById('deviceName').value;
+            let watt = parseFloat(document.getElementById('wattage').value);
+            let hours = parseFloat(document.getElementById('usage').value);
+            
+            if (!name || isNaN(watt) || isNaN(hours)) {
+                alert("Please enter valid device details");
+                return;
+            }
+            
+            devices.push({ name, watt, hours });
+            updateDeviceList();
+            document.getElementById('deviceName').value = '';
+            document.getElementById('wattage').value = '';
+            document.getElementById('usage').value = '';
+        }
+        
+        function updateDeviceList() {
+            let list = document.getElementById('deviceList');
+            list.innerHTML = '';
+            devices.forEach((device, index) => {
+                list.innerHTML += `<li>${device.name} - ${device.watt}W for ${device.hours} hrs/day <button onclick="removeDevice(${index})">Remove</button></li>`;
+            });
+        }
+        
+        function removeDevice(index) {
+            devices.splice(index, 1);
+            updateDeviceList();
+        }
+        
+        function clearDevices() {
+            devices = [];
+            updateDeviceList();
+        }
+        
+        function calculate() {
+            let totalWattHours = devices.reduce((sum, d) => sum + (d.watt * d.hours), 0);
+            let days = parseFloat(document.getElementById('days').value);
+            let daylight = parseFloat(document.getElementById('daylight').value);
+            let efficiency = parseFloat(document.getElementById('efficiency').value) / 100;
+            
+            if (isNaN(totalWattHours) || isNaN(days) || isNaN(daylight) || isNaN(efficiency)) {
+                alert("Please enter all values correctly");
+                return;
+            }
+            
+            let requiredBattery = totalWattHours * days;
+            let requiredSolar = (requiredBattery / (daylight * efficiency)).toFixed(2);
+            
+            document.getElementById('result').innerText = `Battery Needed: ${requiredBattery} Wh, Solar Panel Needed: ${requiredSolar} W`;
+        }
+    </script>
+</body>
+</html>
