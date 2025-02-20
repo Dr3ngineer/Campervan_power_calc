@@ -3,86 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campervan Solar Calculator</title>
+    <title>Campervan Power Calculator</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        .container { max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; }
-        input, button { margin: 10px; padding: 10px; }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        label, input, button { display: block; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Campervan Solar Calculator</h2>
-        <label>Device Name: <input type="text" id="deviceName"></label><br>
-        <label>Wattage (W): <input type="number" id="wattage"></label><br>
-        <label>Usage (hrs/day): <input type="number" id="usage"></label><br>
+        <h2>Campervan Power Calculator</h2>
+        
+        <label for="deviceName">Device Name:</label>
+        <input type="text" id="deviceName">
+        
+        <label for="deviceWattage">Device Wattage (W):</label>
+        <input type="number" id="deviceWattage">
+        
+        <label for="deviceHours">Usage per Day (hours):</label>
+        <input type="number" id="deviceHours">
+        
         <button onclick="addDevice()">Add Device</button>
-        <button onclick="clearDevices()">Clear Devices</button>
+        <button onclick="removeDevice()">Remove Selected Device</button>
         
-        <h3>Devices:</h3>
-        <ul id="deviceList"></ul>
+        <h3>Devices</h3>
+        <select id="deviceList" size="5" style="width: 100%;"></select>
         
-        <label>Daylight Hours: <input type="number" id="daylight"></label><br>
-        <label>Solar Efficiency (%): <input type="number" id="efficiency"></label><br>
-        <label>Days Off-Grid: <input type="number" id="days"></label><br>
+        <h3>Solar Panel & Battery Inputs</h3>
+        <label for="numDays">Days Off-Grid:</label>
+        <input type="number" id="numDays">
         
-        <button onclick="calculate()">Calculate</button>
-        <h3 id="result"></h3>
+        <label for="daylightHours">Daylight Hours per Day:</label>
+        <input type="number" id="daylightHours">
+        
+        <label for="panelWatts">Watts per Solar Panel:</label>
+        <input type="number" id="panelWatts">
+        
+        <label for="numPanels">Number of Panels:</label>
+        <input type="number" id="numPanels">
+        
+        <button onclick="calculateBattery()">Calculate Required Battery Capacity</button>
+        
+        <h3>Results</h3>
+        <p id="batteryCapacity">Battery Capacity Needed: -</p>
     </div>
     
     <script>
         let devices = [];
-        
+
         function addDevice() {
-            let name = document.getElementById('deviceName').value;
-            let watt = parseFloat(document.getElementById('wattage').value);
-            let hours = parseFloat(document.getElementById('usage').value);
+            const name = document.getElementById("deviceName").value;
+            const wattage = parseFloat(document.getElementById("deviceWattage").value);
+            const hours = parseFloat(document.getElementById("deviceHours").value);
             
-            if (!name || isNaN(watt) || isNaN(hours)) {
-                alert("Please enter valid device details");
-                return;
+            if (name && wattage > 0 && hours > 0) {
+                devices.push({ name, wattage, hours });
+                updateDeviceList();
             }
             
-            devices.push({ name, watt, hours });
-            updateDeviceList();
-            document.getElementById('deviceName').value = '';
-            document.getElementById('wattage').value = '';
-            document.getElementById('usage').value = '';
+            document.getElementById("deviceName").value = "";
+            document.getElementById("deviceWattage").value = "";
+            document.getElementById("deviceHours").value = "";
         }
-        
+
+        function removeDevice() {
+            const list = document.getElementById("deviceList");
+            if (list.selectedIndex !== -1) {
+                devices.splice(list.selectedIndex, 1);
+                updateDeviceList();
+            }
+        }
+
         function updateDeviceList() {
-            let list = document.getElementById('deviceList');
-            list.innerHTML = '';
+            const list = document.getElementById("deviceList");
+            list.innerHTML = "";
             devices.forEach((device, index) => {
-                list.innerHTML += `<li>${device.name} - ${device.watt}W for ${device.hours} hrs/day <button onclick="removeDevice(${index})">Remove</button></li>`;
+                let option = document.createElement("option");
+                option.text = `${device.name} - ${device.wattage}W, ${device.hours}h`;
+                list.add(option);
             });
         }
-        
-        function removeDevice(index) {
-            devices.splice(index, 1);
-            updateDeviceList();
-        }
-        
-        function clearDevices() {
-            devices = [];
-            updateDeviceList();
-        }
-        
-        function calculate() {
-            let totalWattHours = devices.reduce((sum, d) => sum + (d.watt * d.hours), 0);
-            let days = parseFloat(document.getElementById('days').value);
-            let daylight = parseFloat(document.getElementById('daylight').value);
-            let efficiency = parseFloat(document.getElementById('efficiency').value) / 100;
+
+        function calculateBattery() {
+            let totalEnergy = devices.reduce((sum, device) => sum + (device.wattage * device.hours), 0);
+            let numDays = parseFloat(document.getElementById("numDays").value);
+            let daylightHours = parseFloat(document.getElementById("daylightHours").value);
+            let panelWatts = parseFloat(document.getElementById("panelWatts").value);
+            let numPanels = parseFloat(document.getElementById("numPanels").value);
             
-            if (isNaN(totalWattHours) || isNaN(days) || isNaN(daylight) || isNaN(efficiency)) {
-                alert("Please enter all values correctly");
-                return;
+            if (numDays > 0 && daylightHours > 0 && panelWatts > 0 && numPanels > 0) {
+                let totalSolarPower = panelWatts * numPanels * daylightHours;
+                let requiredBatteryCapacity = (totalEnergy * numDays) - totalSolarPower;
+                document.getElementById("batteryCapacity").innerText = `Battery Capacity Needed: ${Math.max(0, requiredBatteryCapacity.toFixed(2))} Wh`;
             }
-            
-            let requiredBattery = totalWattHours * days-(days*daylight*efficiency);
-            let requiredSolar = (requiredBattery / (daylight * efficiency)).toFixed(2);
-            
-            document.getElementById('result').innerText = `Battery Needed: ${requiredBattery} Wh, Solar Panel Needed: ${requiredSolar} W`;
         }
     </script>
 </body>
