@@ -79,7 +79,7 @@
                 return;
             }
             
-            let requiredBattery = totalWattHours * days;
+            let requiredBattery = totalWattHours * days-(days*daylight*efficiency);
             let requiredSolar = (requiredBattery / (daylight * efficiency)).toFixed(2);
             
             document.getElementById('result').innerText = `Battery Needed: ${requiredBattery} Wh, Solar Panel Needed: ${requiredSolar} W`;
