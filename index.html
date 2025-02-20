@@ -96,7 +96,7 @@
             let numEff = parseFloat(document.getElementById("numEff").value);
             
             if (numDays > 0 && daylightHours > 0 && panelWatts > 0 && numPanels > 0) {
-                let totalSolarPower = panelWatts * numPanels * daylightHours*numEff;
+                let totalSolarPower = panelWatts * numPanels * daylightHours * numEff;
                 let requiredBatteryCapacity = (totalEnergy * numDays) - totalSolarPower;
                 document.getElementById("batteryCapacity").innerText = `Battery Capacity Needed: ${Math.max(0, requiredBatteryCapacity.toFixed(2))} Wh`;
             }
