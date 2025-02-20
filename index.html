@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campervan Power Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        label, input, button { display: block; margin-top: 10px; }
+    </style>
     <title>Solar Power Calculator</title>
     <script>
         let devices = [];
@@ -86,22 +95,29 @@
     
     <label>Device Name:</label>
     <input type="text" id="deviceName">
+    
     <label>Wattage:</label>
     <input type="number" id="deviceWattage">
+    
     <label>Usage (hours):</label>
     <input type="number" id="deviceUsage">
+    
     <button onclick="addDevice()">Add Device</button>
     
     <ul id="deviceList"></ul>
     
     <label>Days Off-Grid:</label>
     <input type="number" id="daysOffGrid">
+    
     <label>Watts per Panel:</label>
     <input type="number" id="panelWatts">
+    
     <label>Number of Panels:</label>
     <input type="number" id="panelCount">
+    
     <label>Panel Efficiency (%):</label>
     <input type="number" id="panelEfficiency">
+    
     <label>Daylight Hours:</label>
     <input type="number" id="daylightHours">
     
