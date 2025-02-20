@@ -42,6 +42,9 @@
         <label for="numPanels">Number of Panels:</label>
         <input type="number" id="numPanels">
         
+        <label for="efficiency">Panel Efficiency:</label>
+        <input type="number" id="numEff">
+        
         <button onclick="calculateBattery()">Calculate Required Battery Capacity</button>
         
         <h3>Results</h3>
@@ -90,9 +93,10 @@
             let daylightHours = parseFloat(document.getElementById("daylightHours").value);
             let panelWatts = parseFloat(document.getElementById("panelWatts").value);
             let numPanels = parseFloat(document.getElementById("numPanels").value);
+            let numEff = parseFloat(document.getElementById("numEff").value);
             
             if (numDays > 0 && daylightHours > 0 && panelWatts > 0 && numPanels > 0) {
-                let totalSolarPower = panelWatts * numPanels * daylightHours;
+                let totalSolarPower = panelWatts * numPanels * daylightHours*numEff;
                 let requiredBatteryCapacity = (totalEnergy * numDays) - totalSolarPower;
                 document.getElementById("batteryCapacity").innerText = `Battery Capacity Needed: ${Math.max(0, requiredBatteryCapacity.toFixed(2))} Wh`;
             }
